@@ -1,0 +1,14 @@
+type Good {
+  _id: ID
+  title: String!
+  count: Int!
+  cost: Float
+}
+
+type Query {
+  getGoods: [Good]
+}
+
+type Mutation {
+  addGood(title: String!, count: Int!, cost: Float): Good!
+}

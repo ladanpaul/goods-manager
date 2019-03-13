@@ -14,12 +14,12 @@
         Count: <input
           :disabled="item.isDisabled"
           type="number"
-          v-model.lazy="item.count"
+          v-model.number.lazy="item.count"
         >
         Cost: <input
           :disabled="item.isDisabled"
           type="number"
-          v-model.lazy="item.cost"
+          v-model.number.lazy="item.cost"
         >
       </div>
       <div class="buttons">

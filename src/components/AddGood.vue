@@ -32,6 +32,9 @@
 </template>
 
 <script>
+// import { GOODS_MUTATION } from "@/graphql";
+// import gql from "graphql-tag";
+
 export default {
   name: "AddGood",
 

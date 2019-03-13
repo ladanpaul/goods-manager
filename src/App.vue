@@ -1,30 +1,16 @@
 <template>
   <div id="app">
-    <h1 class="title">
-      Managers Project
-    </h1>
-    <GoodsList />
+    <!-- <div id="nav">
+      <router-link to="/">Home</router-link> |
+      <router-link to="/about">About</router-link>
+    </div> -->
+    <router-view />
   </div>
 </template>
 
 <script>
-import GoodsList from "./components/GoodsList.vue";
-
 export default {
-  name: "app",
-  components: {
-    GoodsList
-  }
+  name: "app"
 };
 </script>
 
-<style lang="scss" scoped>
-#app {
-  border: 2px solid lightblue;
-  height: 100%;
-
-  .title {
-    text-align: center;
-  }
-}
-</style>
