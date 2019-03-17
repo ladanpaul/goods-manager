@@ -3,6 +3,7 @@ type Good {
   title: String!
   count: Int!
   cost: Float
+  isDisabled: Boolean
 }
 
 type Query {
@@ -10,5 +11,5 @@ type Query {
 }
 
 type Mutation {
-  addGood(title: String!, count: Int!, cost: Float): Good!
+  addGood(title: String!, count: Int!, cost: Float, isDisabled: Boolean): Good!
 }

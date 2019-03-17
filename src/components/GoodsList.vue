@@ -34,7 +34,6 @@
 <script>
 import AddGood from "./AddGood";
 import EditGood from "./EditGood";
-// import { GOODS_QUERY } from "@/graphql";
 import gql from "graphql-tag";
 
 export default {
@@ -65,6 +64,71 @@ export default {
       goods: [],
       newGoods: null
     };
+  },
+
+  mounted() {
+    // this.$apollo.getClient().writeData({
+    //   data: {
+    //     good: {
+    //       __typename: "defaultType",
+    //       title: "Mango",
+    //       count: 281,
+    //       cost: 1
+    //     }
+    //   }
+    // });
+
+    // const newGood = this.$apollo.getClient().readQuery({
+    //   query: gql`
+    //     query {
+    //       good {
+    //         title
+    //         count
+    //         cost
+    //       }
+    //     }
+    //   `
+    // }).good;
+
+    // console.log("default Good -> ", newGood);
+
+    this.$apollo
+      .mutate({
+        mutation: gql`
+          mutation {
+            addGood(title: "orange", count: 10, cost: 0.5, __typename: "Good") {
+              title
+              count
+              cost
+              __typename
+            }
+          }
+        `
+      })
+      .then(response => {
+        debugger;
+      });
+
+    this.$apollo
+      .query({
+        fetchPolicy: "network-only",
+        query: gql`
+          query {
+            getGoods {
+              _id
+              title
+              count
+              cost
+              isDisabled
+            }
+          }
+        `
+      })
+      .then(({ data }) => {
+        this.goods = data.getGoods;
+        console.log("goods -> ", this.goods);
+        return data;
+      });
   },
 
   watch: {

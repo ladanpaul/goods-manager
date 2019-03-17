@@ -6,7 +6,7 @@ module.exports = {
     }
   },
   Mutation: {
-    addGood: async (_, { title, count, cost }, { Good }) => {
+    addGood: async (_, { title, count, cost, isDisabled }, { Good }) => {
       const good = await Good.findOne({ title });
 
       if (good) {
@@ -16,7 +16,8 @@ module.exports = {
       const newGood = await new Good({
         title,
         count,
-        cost
+        cost,
+        isDisabled
       }).save();
       return newGood;
     }

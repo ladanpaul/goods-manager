@@ -24,7 +24,7 @@
       </div>
       <div class="buttons">
         <button @click="editGood(item)">Edit</button>
-        <button @click="deleteGood(item.id)">x</button>
+        <button @click="deleteGood(item._id)">x</button>
       </div>
     </div>
   </div>
@@ -41,7 +41,7 @@ export default {
   methods: {
     editGood: good => (good.isDisabled = !good.isDisabled),
     deleteGood(goodId) {
-      const newGoods = this.goods.filter(good => good.id !== goodId);
+      const newGoods = this.goods.filter(good => good._id !== goodId);
       this.$emit("newGoods", newGoods);
     }
   }

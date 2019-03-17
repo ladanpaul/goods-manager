@@ -59,7 +59,8 @@ const cache = new InMemoryCache();
 
 const defaultState = {
   good: {
-    title: "someGood",
+    __typename: "defaultType",
+    title: "",
     count: 0,
     cost: 0
   }

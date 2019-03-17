@@ -57,10 +57,10 @@ export default {
     addGood() {
       const good = Object.assign({}, this.good);
       Object.defineProperties(good, {
-        id: {
-          value: Date.now(),
-          enumerable: true
-        },
+        // id: {
+        //   value: Date.now(),
+        //   enumerable: true
+        // },
         isDisabled: {
           value: true,
           enumerable: true,
@@ -68,6 +68,7 @@ export default {
         }
       });
       this.goods.push(good);
+      console.log("this goods -> ", this.goods);
       this.resetInputs();
     },
 

@@ -16,6 +16,10 @@ const GoodSchema = new mongoose.Schema({
     type: Number,
     required: true,
     trim: true
+  },
+  isDisabled: {
+    type: Boolean,
+    default: true
   }
 });
 
