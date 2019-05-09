@@ -13,3 +13,12 @@ type Query {
 type Mutation {
   addGood(title: String!, count: Int!, cost: Float, isDisabled: Boolean): Good!
 }
+
+# type Mutation {
+#   editGood(
+#     title: String!
+#     count: Int!
+#     cost: Float
+#     isDisabled: Boolean
+#   ): [Good]!
+# }

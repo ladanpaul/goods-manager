@@ -19,7 +19,11 @@ module.exports = {
         cost,
         isDisabled
       }).save();
+
       return newGood;
     }
+    // editGood: async (_, { title, count, cost, isDisabled }, { Good }) => {
+    //   console.log("GOOODDDDDD -> ", Good);
+    // }
   }
 };

@@ -14,7 +14,7 @@
         Count: <input
           :disabled="item.isDisabled"
           type="number"
-          v-model.number.lazy="item.count"
+          v-model.lazy="item.count"
         >
         Cost: <input
           :disabled="item.isDisabled"
@@ -24,13 +24,15 @@
       </div>
       <div class="buttons">
         <button @click="editGood(item)">Edit</button>
-        <button @click="deleteGood(item._id)">x</button>
+        <button @click="deleteGood(item.id)">x</button>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import gql from "graphql-tag";
+
 export default {
   name: "EditGood",
 
@@ -39,10 +41,71 @@ export default {
   },
 
   methods: {
-    editGood: good => (good.isDisabled = !good.isDisabled),
+    editGood(good) {
+      good.isDisabled = !good.isDisabled;
+
+      if (good.isDisabled) {
+        const params = {
+          id: good.id,
+          title: good.title,
+          count: good.count.toString(),
+          cost: good.cost.toString(),
+          isDisabled: true
+        };
+
+        this.$apollo.mutate({
+          mutation: gql`
+            mutation editGood(
+              $id: Number
+              $title: String!
+              $count: String!
+              $cost: String!
+              $isDisabled: Boolean
+            ) {
+              editGood(
+                id: $id
+                title: $title
+                count: $count
+                cost: $cost
+                isDisabled: $isDisabled
+              ) @client
+            }
+          `,
+          variables: params
+        });
+      }
+    },
+
     deleteGood(goodId) {
-      const newGoods = this.goods.filter(good => good._id !== goodId);
-      this.$emit("newGoods", newGoods);
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation deleteGood($id: Number) {
+              deleteGood(id: $id) @client
+            }
+          `,
+          variables: {
+            id: goodId
+          }
+        })
+        .then(() => {
+          const getData = this.$apollo.getClient().readQuery({
+            query: gql`
+              query {
+                goods {
+                  id
+                  title
+                  count
+                  cost
+                  isDisabled
+                }
+              }
+            `
+          });
+
+          this.$emit("editedGoods", getData.goods);
+          console.log("newgoods -> ", getData.goods);
+        });
     }
   }
 };

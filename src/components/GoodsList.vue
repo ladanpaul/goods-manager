@@ -1,33 +1,11 @@
 <template>
   <div>
     <h1>Goods</h1>
-    <AddGood :goods="goods" />
+    <AddGood @editedGoods="editedGoods = $event" />
     <EditGood
       :goods="goods"
-      @newGoods="newGoods = $event"
+      @editedGoods="editedGoods = $event"
     />
-    <pre>
-      {{goods}}
-    </pre>
-    <div style="border: 2px solid blue;">
-      <h1>
-        List from server DB:
-      </h1>
-      <ul
-        v-for="good in getGoods"
-        :key="good._id"
-      >
-        <li>
-          {{good.title}}
-        </li>
-        <li>
-          {{good.count}}
-        </li>
-        <li>
-          {{good.cost}}
-        </li>
-      </ul>
-    </div>
   </div>
 </template>
 
@@ -39,21 +17,6 @@ import gql from "graphql-tag";
 export default {
   name: "GoodsList",
 
-  apollo: {
-    getGoods: {
-      query: gql`
-        query {
-          getGoods {
-            _id
-            title
-            count
-            cost
-          }
-        }
-      `
-    }
-  },
-
   components: {
     AddGood,
     EditGood
@@ -62,81 +25,75 @@ export default {
   data() {
     return {
       goods: [],
-      newGoods: null
+      editedGoods: null
     };
   },
 
   mounted() {
-    // this.$apollo.getClient().writeData({
-    //   data: {
-    //     good: {
-    //       __typename: "defaultType",
-    //       title: "Mango",
-    //       count: 281,
-    //       cost: 1
-    //     }
-    //   }
-    // });
-
-    // const newGood = this.$apollo.getClient().readQuery({
-    //   query: gql`
-    //     query {
-    //       good {
+    const goodsLocal = JSON.parse(localStorage.getItem("Goods"));
+    const getData = this.$apollo.getClient().readQuery({
+      query: gql`
+        query {
+          goods {
+            id
+            title
+            count
+            cost
+            isDisabled
+          }
+        }
+      `
+    });
+    if (goodsLocal) {
+      this.goods = getData.goods;
+    }
+    //=========
+    // GET GOODS from MongoDB
+    // this.$apollo
+    //   .query({
+    //     fetchPolicy: "network-only",
+    //     query: gql`
+    //       query {
+    //         getGoods {
+    //           _id
+    //           title
+    //           count
+    //           cost
+    //           isDisabled
+    //         }
+    //       }
+    //     `
+    //   })
+    //   .then(({ data }) => {
+    //     this.goods = data.getGoods;
+    //     console.log("goods -> ", this.goods);
+    //     return data;
+    //   });
+    // Mutation for add good
+    // this.$apollo.mutate({
+    //   mutation: gql`
+    //     mutation($title: String!, $count: Int!, $cost: Float) {
+    //       addGood(title: $title, count: $count, cost: $cost) {
     //         title
     //         count
     //         cost
     //       }
     //     }
-    //   `
-    // }).good;
-
-    // console.log("default Good -> ", newGood);
-
-    this.$apollo
-      .mutate({
-        mutation: gql`
-          mutation {
-            addGood(title: "orange", count: 10, cost: 0.5, __typename: "Good") {
-              title
-              count
-              cost
-              __typename
-            }
-          }
-        `
-      })
-      .then(response => {
-        debugger;
-      });
-
-    this.$apollo
-      .query({
-        fetchPolicy: "network-only",
-        query: gql`
-          query {
-            getGoods {
-              _id
-              title
-              count
-              cost
-              isDisabled
-            }
-          }
-        `
-      })
-      .then(({ data }) => {
-        this.goods = data.getGoods;
-        console.log("goods -> ", this.goods);
-        return data;
-      });
+    //   `,
+    //   variables: {
+    //     title: "Bbbbb",
+    //     count: "12",
+    //     cost: 2
+    //   }
+    // });
   },
 
   watch: {
-    newGoods(newVal, oldVal) {
+    editedGoods(newVal, oldVal) {
       if (newVal !== oldVal) {
         this.goods = newVal;
       }
     }
   }
 };
-</script>
+</script> 

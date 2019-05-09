@@ -57,21 +57,142 @@ const httpLink = new HttpLink({
 // Cache implementation
 const cache = new InMemoryCache();
 
-const defaultState = {
-  good: {
-    __typename: "defaultType",
-    title: "",
-    count: 0,
-    cost: 0
-  }
+// const defaultState = {
+//   good: {
+//     __typename: "defaultType",
+//     title: "",
+//     count: 0,
+//     cost: 0
+//   }
+// };
+
+const defaultState = JSON.parse(localStorage.getItem("Goods")) || {
+  goods: [
+    {
+      __typename: "newGood",
+      id: "777",
+      title: "testGood",
+      count: "777",
+      cost: "7",
+      isDisabled: true
+    }
+  ]
 };
 
 const stateLink = withClientState({
   cache,
-  defaults: defaultState
+  defaults: defaultState,
+  // defaults: {
+  //   currentUser: {
+  //     __typename: "currentUser",
+  //     token: localStorage.getItem('JWT') || false,
+  //     user: false
+  //   }
+  // },
+  resolvers: {
+    // Mutation: {
+    //   login: (_, { token }, { cache }) => {
+    //     localStorage.setItem("JWT", token);
+    //     const data = {
+    //       currentUser: {
+    //         __typename: "currentUser",
+    //         token
+    //       }
+    //     };
+    //     cache.writeData({ data });
+
+    //     return null;
+    //   },
+    //   logout: (_, data, { cache }) => {
+    //     localStorage.removeItem("JWT");
+    //     cache.writeData({
+    //       data: {
+    //         currentUser: {
+    //           __typename: "currentUser",
+    //           token: false
+    //         }
+    //       }
+    //     });
+
+    //     return null;
+    //   }
+    // }
+    Mutation: {
+      addNewGood(_, { id, title, count, cost, isDisabled }, { cache }) {
+        const localData =
+          JSON.parse(localStorage.getItem("Goods")) || defaultState.goods;
+        const data = {
+          goods: [
+            {
+              __typename: "newGood",
+              id,
+              title,
+              count,
+              cost,
+              isDisabled
+            }
+          ]
+        };
+
+        if (localData.goods) {
+          const isSame = localData.goods.some(item => {
+            return item.title === title;
+          });
+
+          if (isSame) return;
+
+          data.goods.push(...localData.goods);
+        }
+
+        localStorage.setItem("Goods", JSON.stringify(data));
+        cache.writeData({ data });
+
+        return null;
+      },
+
+      editGood: (_, { id, title, count, cost, isDisabled }, { cache }) => {
+        const localData = JSON.parse(localStorage.getItem("Goods"));
+        if (localData.goods) {
+          const data = {
+            goods: [
+              {
+                __typename: "newGood",
+                id,
+                title,
+                count,
+                cost,
+                isDisabled
+              }
+            ]
+          };
+
+          let editedGood = localData.goods.filter(good => good.id !== id);
+
+          data.goods.push(...editedGood);
+          localStorage.setItem("Goods", JSON.stringify(data));
+          cache.writeData({ data });
+        }
+
+        return null;
+      },
+
+      deleteGood: (_, { id }, { cache }) => {
+        const localData = JSON.parse(localStorage.getItem("Goods"));
+        if (localData.goods) {
+          const data = {};
+          data.goods = localData.goods.filter(good => good.id !== id);
+
+          localStorage.setItem("Goods", JSON.stringify(data));
+          cache.writeData({ data });
+        }
+
+        return null;
+      }
+    }
+  }
 });
 
-// Create the apollo client
+// Create the apol.lo client
 const apolloClient = new ApolloClient({
   link: ApolloLink.from([stateLink, httpLink]),
   cache

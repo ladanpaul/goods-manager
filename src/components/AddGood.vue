@@ -1,8 +1,8 @@
 <template>
   <div>
-    <h2>
-      AddGood:
-    </h2>
+    <h3>
+      Add Good:
+    </h3>
     <div>
       <input
         type="text"
@@ -21,12 +21,8 @@
       >
       <button
         :disabled="isValid"
-        @click="checkSameValues"
+        @click="addGood"
       >Add</button>
-      <!-- {{good}} -->
-      <!-- <div>
-        {{isValid}}
-      </div> -->
     </div>
   </div>
 </template>
@@ -34,13 +30,10 @@
 <script>
 // import { GOODS_MUTATION } from "@/graphql";
 // import gql from "graphql-tag";
+import gql from "graphql-tag";
 
 export default {
   name: "AddGood",
-
-  props: {
-    goods: { type: Array, required: true }
-  },
 
   data() {
     return {
@@ -55,33 +48,80 @@ export default {
 
   methods: {
     addGood() {
-      const good = Object.assign({}, this.good);
-      Object.defineProperties(good, {
-        // id: {
-        //   value: Date.now(),
-        //   enumerable: true
-        // },
-        isDisabled: {
-          value: true,
-          enumerable: true,
-          configurable: true
-        }
-      });
-      this.goods.push(good);
-      console.log("this goods -> ", this.goods);
+      // const good = Object.assign({}, this.good);
+      // Object.defineProperties(good, {
+      // id: {
+      //   value: Date.now(),
+      //   enumerable: true
+      // },
+      //   isDisabled: {
+      //     value: true,
+      //     enumerable: true,
+      //     configurable: true
+      //   }
+      // });
+      // this.goods.push(good);
+      const params = {
+        id: Date.now(),
+        title: this.good.title,
+        count: this.good.count,
+        cost: this.good.cost,
+        isDisabled: true
+      };
+
+      this.$apollo
+        .mutate({
+          mutation: gql`
+            mutation addNewGood(
+              $id: Number
+              $title: String!
+              $count: String!
+              $cost: String!
+              $isDisabled: Boolean
+            ) {
+              addNewGood(
+                id: $id
+                title: $title
+                count: $count
+                cost: $cost
+                isDisabled: $isDisabled
+              ) @client
+            }
+          `,
+          variables: params
+        })
+        .then(() => {
+          const getData = this.$apollo.getClient().readQuery({
+            query: gql`
+              query {
+                goods {
+                  id
+                  title
+                  count
+                  cost
+                  isDisabled
+                }
+              }
+            `
+          });
+          // this.goods = getData.goods;
+          console.log("GOODSSSS -> ", getData.goods);
+          this.$emit("editedGoods", getData.goods);
+        });
+
       this.resetInputs();
     },
 
-    checkSameValues() {
-      const goodTitle = this.good.title;
-      const isSame = this.goods.some(item => {
-        return item.title === goodTitle;
-      });
+    // checkSameValues() {
+    // const goodTitle = this.good.title;
+    // const isSame = this.goods.some(item => {
+    //   return item.title === goodTitle;
+    // });
 
-      if (isSame) return;
+    // if (isSame) return;
 
-      this.addGood();
-    },
+    // this.addGood();
+    // },
 
     resetInputs() {
       Object.keys(this.good).forEach(key => {
