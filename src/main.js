@@ -57,15 +57,6 @@ const httpLink = new HttpLink({
 // Cache implementation
 const cache = new InMemoryCache();
 
-// const defaultState = {
-//   good: {
-//     __typename: "defaultType",
-//     title: "",
-//     count: 0,
-//     cost: 0
-//   }
-// };
-
 const defaultState = JSON.parse(localStorage.getItem("Goods")) || {
   goods: [
     {
@@ -82,41 +73,7 @@ const defaultState = JSON.parse(localStorage.getItem("Goods")) || {
 const stateLink = withClientState({
   cache,
   defaults: defaultState,
-  // defaults: {
-  //   currentUser: {
-  //     __typename: "currentUser",
-  //     token: localStorage.getItem('JWT') || false,
-  //     user: false
-  //   }
-  // },
   resolvers: {
-    // Mutation: {
-    //   login: (_, { token }, { cache }) => {
-    //     localStorage.setItem("JWT", token);
-    //     const data = {
-    //       currentUser: {
-    //         __typename: "currentUser",
-    //         token
-    //       }
-    //     };
-    //     cache.writeData({ data });
-
-    //     return null;
-    //   },
-    //   logout: (_, data, { cache }) => {
-    //     localStorage.removeItem("JWT");
-    //     cache.writeData({
-    //       data: {
-    //         currentUser: {
-    //           __typename: "currentUser",
-    //           token: false
-    //         }
-    //       }
-    //     });
-
-    //     return null;
-    //   }
-    // }
     Mutation: {
       addNewGood(_, { id, title, count, cost, isDisabled }, { cache }) {
         const localData =
